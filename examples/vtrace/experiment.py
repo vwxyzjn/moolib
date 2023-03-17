@@ -272,7 +272,8 @@ def main(cfg):
 
     if FLAGS.wandb and rank == 0:
         config = omegaconf.OmegaConf.to_container(FLAGS)
-        config["exp_name"] = "moolib_impala_alepy"
+        config["env_id"] = FLAGS.env.name
+        config["rank"] = rank
         wandb.init(
             project=str(FLAGS.project),
             config=config,

@@ -20,6 +20,7 @@ hydra:
   run:
     dir: "${localdir}"
 
+exp_name: moolib_impala_alepy
 actor_batch_size: 128
 baseline_cost: 0.5
 batch_size: 32
