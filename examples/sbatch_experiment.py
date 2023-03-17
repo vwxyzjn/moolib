@@ -69,7 +69,7 @@ parser.add_argument(
 parser.add_argument(
     "--cmd",
     default=(
-        "python -m examples.appo.experiment connect=%(broker)s savedir=%(savedir)s"
+        "python -m examples.vtrace.experiment connect=%(broker)s savedir=%(savedir)s"
         " project=%(project)s group=%(group)s"
     ),
     type=str,
@@ -118,11 +118,11 @@ def check_nfs(nfs_super_magic=0x6969):
         ret = libc.statfs(".", buf)
         if ret != 0:
             return
-        if buf[0] != nfs_super_magic:
-            raise RuntimeError(
-                "Must run from NFS directory, but cwd (%s) isn't (0x%x)"
-                % (os.getcwd(), buf[0]),
-            )
+        # if buf[0] != nfs_super_magic:
+        #     raise RuntimeError(
+        #         "Must run from NFS directory, but cwd (%s) isn't (0x%x)"
+        #         % (os.getcwd(), buf[0]),
+        #     )
     except OSError:
         pass
 
@@ -157,7 +157,7 @@ def check(address):
 
 
 def cmdlist(args):
-    return ["sbatch"] + ["%s=%s" % item for item in args.items()]
+    return ["sbatch"] + ["--job-name=carperai", "--account=carperai"] + ["%s=%s" % item for item in args.items()]
 
 
 def main():
@@ -167,7 +167,7 @@ def main():
     address = get_address(FLAGS.broker)
     check(address)
 
-    savedir = os.path.join("/checkpoint", getpass.getuser(), FLAGS.project, FLAGS.group)
+    savedir = os.path.join("./checkpoint", getpass.getuser(), FLAGS.project, FLAGS.group)
 
     try:
         os.makedirs(savedir)
@@ -194,7 +194,7 @@ def main():
         "--partition": FLAGS.partition,
         "--cpus-per-task": 10,
         "--gpus-per-task": 1,
-        "--mem-per-cpu": "8G",
+        "--mem-per-cpu": "16G",
         "--time": FLAGS.time,
         "--ntasks": 1,
         "--output": slurm_output,

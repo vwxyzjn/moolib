@@ -3,3 +3,6 @@ build/
 dist/
 *.so
 *.egg-info
+wandb
+checkpoint
+latest

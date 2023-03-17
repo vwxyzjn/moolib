@@ -86,7 +86,7 @@ def main():
         packages=["moolib", "moolib.examples.common", "moolib.examples.vtrace"],
         package_dir={"": "py", "moolib.examples": "examples"},
         ext_modules=[setuptools.Extension("moolib._C", sources=[])],
-        install_requires=["torch>=1.6.0"],
+        install_requires=["torch<2.0"],
         cmdclass={"build_ext": CMakeBuild},
         zip_safe=False,
     )

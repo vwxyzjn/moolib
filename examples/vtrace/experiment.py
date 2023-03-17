@@ -168,7 +168,7 @@ def step_optimizer(learner_state, stats):
     stats["model_version"] += 1
 
 
-def log(stats, step, is_global=False):
+def log(stats, step, rank, is_global=False):
     stats_values = {}
     prefix = "global/" if is_global else "local/"
     for k, v in stats.items():
@@ -179,7 +179,8 @@ def log(stats, step, is_global=False):
     if not is_global:
         record.log_to_file(**stats_values)
 
-    if FLAGS.wandb:
+    if FLAGS.wandb and rank == 0:
+        stats_values["global_step"] = step
         wandb.log(stats_values, step=step)
 
 
@@ -266,14 +267,20 @@ def main(cfg):
         model_numel=model_numel,
     )
 
-    if FLAGS.wandb:
+    rank = int(os.environ.get("SLURM_ARRAY_TASK_ID", 0))
+    print("rank", rank)
+
+    if FLAGS.wandb and rank == 0:
+        config = omegaconf.OmegaConf.to_container(FLAGS)
+        config["exp_name"] = "moolib_impala_alepy"
         wandb.init(
             project=str(FLAGS.project),
-            config=omegaconf.OmegaConf.to_container(FLAGS),
+            config=config,
             group=FLAGS.group,
             entity=FLAGS.entity,
             name=FLAGS.local_name,
         )
+        wandb.define_metric("global_step")
 
     env_states = [
         common.EnvBatchState(FLAGS, model) for _ in range(FLAGS.num_actor_batches)
@@ -428,8 +435,8 @@ def main(cfg):
 
             steps = learner_state.global_stats["env_train_steps"].result()
 
-            log(stats, step=steps, is_global=False)
-            log(learner_state.global_stats, step=steps, is_global=True)
+            log(stats, step=steps, rank=rank, is_global=False)
+            log(learner_state.global_stats, step=steps, rank=rank, is_global=True)
 
             if warm_up_time > 0:
                 logging.info(
