@@ -181,7 +181,7 @@ def log(stats, step, rank, is_global=False):
 
     if FLAGS.wandb and rank == 0:
         stats_values["global_step"] = step
-        wandb.log(stats_values, step=step)
+        wandb.log(stats_values)
 
 
 def save_checkpoint(checkpoint_path, learner_state):
