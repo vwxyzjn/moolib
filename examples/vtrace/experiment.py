@@ -244,6 +244,9 @@ def main(cfg):
 
     logging.info("train_id: %s", train_id)
 
+    dummy_env = environment.create_env(FLAGS)
+    dummy_env.reset()
+
     envs = moolib.EnvPool(
         lambda: environment.create_env(FLAGS),
         num_processes=FLAGS.num_actor_cpus,
@@ -253,7 +256,7 @@ def main(cfg):
 
     print("EnvPool started")
 
-    model = models.create_model(FLAGS)
+    model = models.create_model(FLAGS, dummy_env.action_space.n)
     optimizer = create_optimizer(model)
     scheduler = create_scheduler(optimizer)
     learner_state = LearnerState(model, optimizer, scheduler)
@@ -461,19 +464,19 @@ def main(cfg):
                 >= FLAGS.checkpoint_interval
             ):
                 learner_state.last_checkpoint = learner_state.train_time
-                save_checkpoint(checkpoint_path, learner_state)
+                # save_checkpoint(checkpoint_path, learner_state)
             if (
                 learner_state.train_time - learner_state.last_checkpoint_history
                 >= FLAGS.checkpoint_history_interval
             ):
                 learner_state.last_checkpoint_history = learner_state.train_time
-                save_checkpoint(
-                    os.path.join(
-                        FLAGS.savedir,
-                        "checkpoint_v%d.tar" % learner_state.model_version,
-                    ),
-                    learner_state,
-                )
+                # save_checkpoint(
+                #     os.path.join(
+                #         FLAGS.savedir,
+                #         "checkpoint_v%d.tar" % learner_state.model_version,
+                #     ),
+                #     learner_state,
+                # )
 
         if accumulator.has_gradients():
             gradient_stats = accumulator.get_gradient_stats()

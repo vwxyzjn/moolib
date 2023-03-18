@@ -54,7 +54,7 @@ project: project
 # including flags and any global settings/stats for the training
 # localdir (which is a subdirectory of savedir) should be used
 # for storing logs and anything local to each instance
-savedir: "/checkpoint/${oc.env:USER}/hackrl/${project}/${group}"
+savedir: "./checkpoint/${oc.env:USER}/hackrl/${project}/${group}"
 localdir: "${savedir}/peers/${local_name}"
 state_counter: none
 total_steps: 50e6  # 200M steps w/ frame skipping.

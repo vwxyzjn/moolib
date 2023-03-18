@@ -147,7 +147,7 @@ class Net(nn.Module):
         return output, core_state
 
 
-def create_model(flags):
-    model = Net(use_lstm=flags.use_lstm)
+def create_model(flags, num_actions):
+    model = Net(use_lstm=flags.use_lstm, num_actions=num_actions)
     model.to(device=flags.device)
     return model
