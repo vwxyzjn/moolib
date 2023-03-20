@@ -36,6 +36,7 @@ gym = {version = "0.23.1", extras = ["accept-rom-license", "atari"]}
 opencv-python = "^4.7.0.72"
 pygame = "^2.3.0"
 coolname = "^2.2.0"
+envpool = "0.8.1"
 
 
 [build-system]
